@@ -2,14 +2,28 @@ from difflib import get_close_matches
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
+import gdown   # NEW
 
 app = Flask(__name__)
 
-# Load pickled files
-popular_df = pickle.load(open('popular.pkl', 'rb'))
-pt = pickle.load(open('pt.pkl', 'rb'))
-books = pickle.load(open('books.pkl', 'rb'))
-similarity_scores = pickle.load(open('similarity_scores.pkl', 'rb'))
+# Google Drive file IDs (replace with yours!)
+file_ids = {
+    "popular.pkl": "1STALpFK9kFHqTf8a0sGQXFHYigswCif4",
+    "pt.pkl": "1jQVofLhJEfxkOcd4DFgfXVnA5kQMxzba",
+    "books.pkl": "1338PUjFcQ3IWIjDF6jsbnYasXVVIxuJS",
+    "similarity_scores.pkl": "1O9Cu3aTwVe79Xbes-ESGm3tm0CXTKxYx"
+}
+
+# Download and load pickled files
+def load_pickle_from_drive(filename, file_id):
+    url = f"https://drive.google.com/uc?id={file_id}"
+    gdown.download(url, filename, quiet=False)
+    return pickle.load(open(filename, "rb"))
+
+popular_df = load_pickle_from_drive("popular.pkl", file_ids["popular.pkl"])
+pt = load_pickle_from_drive("pt.pkl", file_ids["pt.pkl"])
+books = load_pickle_from_drive("books.pkl", file_ids["books.pkl"])
+similarity_scores = load_pickle_from_drive("similarity_scores.pkl", file_ids["similarity_scores.pkl"])
 
 # Normalize all titles to lowercase and strip spaces
 pt.index = pt.index.str.lower().str.strip()
